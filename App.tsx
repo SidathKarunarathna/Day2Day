@@ -1,10 +1,12 @@
-import { StyleSheet, Text, View } from 'react-native';
-
+import { StyleSheet, Text, View,StatusBar } from 'react-native';
+import Colors from './assets/color';
 import Login from './src/Screens/login';
+import Register from './src/Screens/Register';
 export default function App() {
   return (
     <View >
-      <Login/>
+      <StatusBar translucent={false}  backgroundColor={Colors.main}/> 
+      <Register/>
     </View>
   );
 }
