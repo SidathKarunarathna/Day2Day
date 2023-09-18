@@ -1,6 +1,5 @@
 import { StyleSheet, Text, KeyboardAvoidingView, View, ScrollView, SafeAreaView, TextInput, TouchableOpacity, Platform } from "react-native";
 import Colors from "../../assets/color";
-import DiaryEditor from "../Components/DiaryEditor";
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
 import { format } from "date-fns";
 import React, { useState } from "react";
