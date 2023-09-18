@@ -1,36 +1,62 @@
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View,ScrollView  } from "react-native";
 import Colors from "../../assets/color";
 import { Picker } from '@react-native-picker/picker';
 import { useState } from "react";
+import { addDoc, collection } from "firebase/firestore";
+import { FIRESTORE_DB } from "../../firebaseConfig";
 
 
 export default function Register() {
-    const [selectedGender, setSelectedGender] = useState()
+    const [selectedGender, setSelectedGender] = useState();
+    const [firstName, setFirstName] = useState<String | null>(null);
+    const [lastName, setLastName] = useState<String | null>(null);
+    const [email, setEmail] = useState<String | null>(null);
+    const [password, setPassword] = useState<String | null>(null);
+    const [conPassword, setConPassword] = useState<String | null>(null);
+
+    const addUser = async () => {
+        const doc = await addDoc(collection(FIRESTORE_DB, 'Users'), {
+            firstName: firstName,
+            lastName: lastName,
+            email:email,
+            gender:selectedGender,
+            password:password
+        })
+        setFirstName('');
+        setLastName('');
+        setEmail('');
+        setPassword('');
+    };
+    
     return (
-        <View style={styles.Container}>
+        
+        <ScrollView style={styles.Container}>
             <View style={styles.section}>
                 <Text style={styles.Header}>Create New Account</Text>
                 <Text style={styles.SubTopic}>First Name </Text>
                 <TextInput
                     style={styles.input}
-                    placeholder="Full Name"
-                    keyboardType="numeric"></TextInput>
+                    placeholder="First Name"
+                    onChangeText={(text: String) => setFirstName(text)}
+                    value={firstName} />
                 <Text style={styles.SubTopic}>Last Name </Text>
                 <TextInput
                     style={styles.input}
-                    placeholder="Full Name"
-                    keyboardType="numeric"></TextInput>
+                    placeholder="Last Name"
+                    onChangeText={(text: String) => setLastName(text)}
+                    value={lastName} />
                 <Text style={styles.SubTopic}>Email </Text>
                 <TextInput
                     style={styles.input}
                     placeholder="John@mail.com"
-                    keyboardType="numeric"></TextInput>
+                    onChangeText={(text: String) => setEmail(text)}
+                    value={email} />
                 <Text style={styles.SubTopic}>Gender </Text>
                 <View style={styles.dropDown}><Picker style={{ color: Colors.main }}
-                selectedValue={selectedGender}
-                onValueChange={(itemValue, itemIndex) =>
-                  setSelectedGender(itemValue)
-                }>
+                    selectedValue={selectedGender}
+                    onValueChange={(itemValue, itemIndex) =>
+                        setSelectedGender(itemValue)
+                    }>
                     <Picker.Item label="-Select Gender-" value=" " />
                     <Picker.Item label="Male" value="Male" />
                     <Picker.Item label="Female" value="Female" />
@@ -40,18 +66,22 @@ export default function Register() {
                     style={styles.input}
                     placeholder="***********"
                     secureTextEntry
-                    keyboardType="numeric"></TextInput>
+                    onChangeText={(text: String) => setPassword(text)}
+                    value={password} />
                 <Text style={styles.SubTopic}>Confirm Password </Text>
                 <TextInput
                     style={styles.input}
                     placeholder="***********"
                     secureTextEntry
-                    keyboardType="numeric"></TextInput>
-                <TouchableOpacity style={styles.button}>
+                    onChangeText={(text: String) => setConPassword(text)}
+                    value={conPassword} />
+                <TouchableOpacity 
+                style={styles.button}
+                onPress={addUser}>
                     <Text style={styles.buttonText}>REGISTER</Text>
                 </TouchableOpacity>
             </View>
-        </View>
+        </ScrollView >
     );
 }
 
@@ -123,7 +153,8 @@ const styles = StyleSheet.create({
         marginLeft: 30,
         marginRight: 30,
         marginTop: 30,
-        borderRadius: 30
+        borderRadius: 30,
+        marginBottom:32
     },
     dropDown: {
         color: Colors.main,

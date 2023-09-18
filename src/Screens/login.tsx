@@ -1,7 +1,7 @@
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Colors from "../../assets/color";
 
-export default function Login() {
+export default function Login({navigation}:any) {
     return (
         <View style={styles.Container}>
             <Image
@@ -10,22 +10,23 @@ export default function Login() {
                 source={require("../../assets/Images/day2day1.png")} />
             <View style={styles.section}>
                 <Text style={styles.Header}>LOGIN</Text>
-                <Text style={styles.SubTopic}>User Name </Text>
+                <Text style={styles.SubTopic}>Email</Text>
                 <TextInput
                     style={styles.input}
-                    placeholder="User Name"
-                    keyboardType="numeric"></TextInput>
+                    placeholder="Email"></TextInput>
                 <Text style={styles.SubTopic}>Password </Text>
                 <TextInput
                     style={styles.input}
                     placeholder="Password"
-                    secureTextEntry
-                    keyboardType="numeric"></TextInput>
+                    secureTextEntry></TextInput>
                 <Text style={styles.LeftTopic}>Forgot Password?</Text>
                 <TouchableOpacity style={styles.button}>
                     <Text style={styles.buttonText}>LOGIN</Text>
                 </TouchableOpacity>
+                <TouchableOpacity onPress={()=>navigation.navigate('Register')}>
                 <Text style={styles.LeftTopic}>Create New Account</Text>
+                </TouchableOpacity>
+                
             </View>
         </View>
     );
