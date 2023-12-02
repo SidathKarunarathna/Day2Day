@@ -1,36 +1,70 @@
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View,ScrollView  } from "react-native";
+import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View, ScrollView } from "react-native";
 import Colors from "../../assets/color";
 import { Picker } from '@react-native-picker/picker';
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { addDoc, collection } from "firebase/firestore";
-import { FIRESTORE_DB } from "../../firebaseConfig";
+import { FIREBASE_AUTH, FIRESTORE_DB } from "../../firebaseConfig";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import Spinner from 'react-native-loading-spinner-overlay';
+import { useNavigation } from "@react-navigation/native";
 
 
 export default function Register() {
     const [selectedGender, setSelectedGender] = useState();
     const [firstName, setFirstName] = useState<String | null>(null);
     const [lastName, setLastName] = useState<String | null>(null);
-    const [email, setEmail] = useState<String | null>(null);
-    const [password, setPassword] = useState<String | null>(null);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [conPassword, setConPassword] = useState<String | null>(null);
+    const [loading, setLoading] = useState(false);
 
-    const addUser = async () => {
+    const navigation = useNavigation();
+    const auth = FIREBASE_AUTH;
+
+    useEffect(()=>{
+        const unsubscribe = FIREBASE_AUTH.onAuthStateChanged(user=>{
+            if (user){
+                navigation.navigate("Bottom");
+            }
+        })
+        return unsubscribe
+    },[])
+    const register = async () => {
+        setLoading(true);
+        try {
+            const response = await createUserWithEmailAndPassword(auth, email, password);
+            console.log(response);
+            if (response.user) {
+                await addUser(response);
+            }
+        } catch (error: any) {
+            console.log(error)
+            alert('Login failed:' + error.message);
+        } finally {
+            setLoading(false);
+        }
+    }
+    const addUser = async (response: any) => {
         const doc = await addDoc(collection(FIRESTORE_DB, 'Users'), {
             firstName: firstName,
             lastName: lastName,
-            email:email,
-            gender:selectedGender,
-            password:password
+            gender: selectedGender,
+            userId: response.user.uid
         })
         setFirstName('');
         setLastName('');
         setEmail('');
         setPassword('');
     };
-    
+
     return (
-        
+
         <ScrollView style={styles.Container}>
+            <Spinner
+                visible={loading}
+                textContent={'Loading...'}
+                textStyle={styles.spinnerTextStyle}
+            />
             <View style={styles.section}>
                 <Text style={styles.Header}>Create New Account</Text>
                 <Text style={styles.SubTopic}>First Name </Text>
@@ -75,9 +109,9 @@ export default function Register() {
                     secureTextEntry
                     onChangeText={(text: String) => setConPassword(text)}
                     value={conPassword} />
-                <TouchableOpacity 
-                style={styles.button}
-                onPress={addUser}>
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => register()}>
                     <Text style={styles.buttonText}>REGISTER</Text>
                 </TouchableOpacity>
             </View>
@@ -154,7 +188,7 @@ const styles = StyleSheet.create({
         marginRight: 30,
         marginTop: 30,
         borderRadius: 30,
-        marginBottom:32
+        marginBottom: 32
     },
     dropDown: {
         color: Colors.main,
@@ -165,5 +199,7 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         marginBottom: 20,
         marginTop: 10
+    }, spinnerTextStyle: {
+        color: '#FFF',
     }
 })

@@ -2,19 +2,31 @@ import { StyleSheet, Text, KeyboardAvoidingView, View, ScrollView, SafeAreaView,
 import Colors from "../../assets/color";
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
 import { format } from "date-fns";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { actions, RichEditor, RichToolbar } from "react-native-pell-rich-editor";
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { addDoc, collection } from "firebase/firestore";
+import { FIREBASE_AUTH, FIRESTORE_DB } from "../../firebaseConfig";
+import { useNavigation } from "@react-navigation/native";
 
 
-export default function CreateDiary() {
+export default function CreateDiary({navigation:nav}) {
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const [date, setDate] = useState(new Date);
     const [pageDate, setPageDate] = useState<String | null>(null);
     const [showPicker, setShowPicker] = useState(false);
-    const richText = React.useRef();
+    const richText = React.useRef(null);
     const [page, setPage] = useState<String | null>(null);
+    const [happyFocused, setHappyFocused] = useState(false);
+    const [normalFocused, setNormalFocused] = useState(false);
+    const [cryFocused, setCryFocused] = useState(false);
+    const [sadFocused, setSadFocused] = useState(false);
+    const [key, setkey] = useState(new Date().getTime());
+    const [lovelyFocused, setLovelyFocused] = useState(false);
+    const [emoji, setEmoji] = useState<String | null>(null);
+    const navigation = useNavigation();
     const pickImage = async () => {
         // No permissions request is necessary for launching the image library
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -45,6 +57,72 @@ export default function CreateDiary() {
             toggleDatePicker();
         }
     }
+    const selectHappy = () => {
+        setHappyFocused(!happyFocused);
+        setNormalFocused(false);
+        setCryFocused(false);
+        setSadFocused(false);
+        setLovelyFocused(false);
+        setEmoji("Happy");
+    };
+    const selectNormal = () => {
+        setHappyFocused(false);
+        setNormalFocused(!normalFocused);
+        setCryFocused(false);
+        setSadFocused(false);
+        setLovelyFocused(false);
+        setEmoji("Normal");
+    };
+    const selectCry = () => {
+        setHappyFocused(false);
+        setNormalFocused(false);
+        setCryFocused(!cryFocused);
+        setSadFocused(false);
+        setLovelyFocused(false);
+        setEmoji("Tired");
+    };
+    const selectSad = () => {
+        setHappyFocused(false);
+        setNormalFocused(false);
+        setCryFocused(false);
+        setSadFocused(!sadFocused);
+        setLovelyFocused(false);
+        setEmoji("Sad");
+    };
+    const selectLovely = () => {
+        setHappyFocused(false);
+        setNormalFocused(false);
+        setCryFocused(false);
+        setSadFocused(false);
+        setLovelyFocused(!lovelyFocused);
+        setEmoji("Lovely");
+    };
+    const addPage = async () => {
+        const doc = await addDoc(collection(FIRESTORE_DB, 'Diary'), {
+            uid: FIREBASE_AUTH.currentUser?.uid,
+            date: (date.getMonth()+1)+"/"+date.getDate()+"/"+ date.getFullYear(),
+            emoji: emoji,
+            data:page,
+            day:days[date.getDay()],
+        })
+        
+        //setkey(new Date().getTime());
+        navigation.navigate("DiaryList");
+    };
+    useEffect(() => {
+        const unsubscribe = nav.addListener('focus', () => {
+        setHappyFocused(false);
+        setNormalFocused(false);
+        setCryFocused(false);
+        setSadFocused(false);
+        setLovelyFocused(false);
+        setDate(new Date())
+        setEmoji("");
+        setPage("")
+        richText.current?.setContentHTML(null);
+        });
+        return unsubscribe;
+     }, [nav])
     return (
         <ScrollView>
             <View style={styles.Container}>
@@ -53,17 +131,20 @@ export default function CreateDiary() {
                         display: "flex",
                         flexDirection: "row",
                     }}>
-                        <View style={{ alignSelf: "flex-end" }}>
+                        <TouchableOpacity style={{ alignSelf: "flex-end" }}
+                         onPress={()=>navigation.navigate("DiaryList")}>
                             <Ionicons
                                 name="close" size={35}
                                 color={Colors.main} />
-                        </View>
+                        </TouchableOpacity>
                         <Text style={styles.Header}>Write</Text>
-                        <View style={{ alignSelf: "flex-end", marginLeft: "20%" }}>
+                        <TouchableOpacity style={{ alignSelf: "flex-end", marginLeft: "20%" }}
+                        onPress={() => addPage()}>
                             <Ionicons
                                 name="checkmark" size={40}
-                                color={Colors.main} />
-                        </View>
+                                color={Colors.main} 
+                                />
+                        </TouchableOpacity>
                     </View>
                     <View style={styles.section}>
                         <View style={{ height: "auto" }} >
@@ -84,7 +165,7 @@ export default function CreateDiary() {
                                         <View style={{ alignSelf: "flex-end", marginLeft: "60%" }}>
                                             <Ionicons
                                                 name="calendar" size={20}
-                                                color={Colors.main}  />
+                                                color={Colors.main} />
                                         </View>
                                     </View>
 
@@ -93,30 +174,66 @@ export default function CreateDiary() {
 
                             <Text style={styles.SubTopic}>How was your day?</Text>
                             <View style={styles.iconsSection}>
-                                <View style={styles.icons}>
-                                    <FontAwesome5
+                                <TouchableOpacity style={styles.icons}
+                                    onPress={() => selectHappy()}>
+                                    {happyFocused ? (
+                                        <FontAwesome5
+                                            name="smile" size={35}
+                                            color={Colors.main} />
+                                    ) : (<FontAwesome5
                                         name="smile" size={35}
-                                        color={Colors.main} />
-                                </View>
-                                <View style={styles.icons}>
-                                    <FontAwesome5
+                                        color={Colors.deepestGray} />)}
+
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.icons}
+                                    onPress={() => selectNormal()}>
+                                    {normalFocused ? (<FontAwesome5
                                         name="meh" size={35}
                                         color={Colors.main} />
-                                </View>
-                                <View style={styles.icons}>
-                                    <FontAwesome5
-                                        name="tired" size={35}
-                                        color={Colors.main} />
-                                </View>
-                                <View style={styles.icons}>
-                                    <FontAwesome5
-                                        name="frown" size={35}
-                                        color={Colors.main} />
-                                </View>
-                                <View style={styles.icons}>
-                                    <FontAwesome5
-                                        name="grin-hearts" size={35}
-                                        color={Colors.main} /></View>
+                                    ) : (
+                                        <FontAwesome5
+                                            name="meh" size={35}
+                                            color={Colors.deepestGray} />
+                                    )}
+
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.icons}
+                                    onPress={() => selectCry()}>
+                                    {cryFocused ? (
+                                        <FontAwesome5
+                                            name="tired" size={35}
+                                            color={Colors.main} />
+                                    ) : (
+                                        <FontAwesome5
+                                            name="tired" size={35}
+                                            color={Colors.deepestGray} />
+                                    )}
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.icons}
+                                    onPress={() => selectSad()}>
+                                    {sadFocused ? (
+                                        <FontAwesome5
+                                            name="frown" size={35}
+                                            color={Colors.main} />
+                                    ) : (
+                                        <FontAwesome5
+                                            name="frown" size={35}
+                                            color={Colors.deepestGray} />
+                                    )}
+
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.icons}
+                                    onPress={() => selectLovely()}>
+                                    {lovelyFocused ? (
+                                        <FontAwesome5
+                                            name="grin-hearts" size={35}
+                                            color={Colors.main} />
+                                    ) : (
+                                        <FontAwesome5
+                                            name="grin-hearts" size={35}
+                                            color={Colors.deepestGray} />
+                                    )}
+                                </TouchableOpacity>
                             </View>
                         </View>
                         <View style={{ zIndex: 1000, height: "auto" }}>
@@ -152,6 +269,7 @@ export default function CreateDiary() {
                                         focusable
                                         onChange={descriptionText => {
                                             setPage(descriptionText);
+                                            console.log(page)
                                         }}
                                     />
                                 </KeyboardAvoidingView>

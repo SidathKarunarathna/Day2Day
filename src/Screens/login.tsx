@@ -1,26 +1,70 @@
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View,KeyboardAvoidingView, ScrollView } from "react-native";
 import Colors from "../../assets/color";
+import { useEffect, useState } from "react";
+import { tr } from "date-fns/locale";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { FIREBASE_AUTH } from "../../firebaseConfig";
+import Spinner from 'react-native-loading-spinner-overlay';
+import { useNavigation } from "@react-navigation/native";
 
-export default function Login({navigation}:any) {
+export default function Login() {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const navigation = useNavigation();
+    useEffect(()=>{
+        const unsubscribe = FIREBASE_AUTH.onAuthStateChanged(user=>{
+            if (user){
+                navigation.navigate("Bottom");
+            }
+        })
+        return unsubscribe
+    },[])
+    
+    const auth = FIREBASE_AUTH;
+    const signIn = async () =>{
+        setLoading(true);
+        try{
+            const response = await signInWithEmailAndPassword(auth,email,password);
+            if (response.user){
+                console.log("Success");
+            }
+        }catch(error:any){
+            console.log(error)
+            alert('Login failed:'+error.message);
+        }finally{
+            setLoading(false);
+        }
+    }
     return (
-        <View style={styles.Container}>
+        <ScrollView style={styles.Container}>
+            <Spinner
+          visible={loading}
+          textContent={'Loading...'}
+          textStyle={styles.spinnerTextStyle}
+        />
             <Image
                 alt="Logo"
                 style={styles.stretch}
                 source={require("../../assets/Images/day2day1.png")} />
+                <KeyboardAvoidingView behavior= "padding">
             <View style={styles.section}>
                 <Text style={styles.Header}>LOGIN</Text>
                 <Text style={styles.SubTopic}>Email</Text>
                 <TextInput
                     style={styles.input}
-                    placeholder="Email"></TextInput>
+                    placeholder="Email"
+                    onChangeText={(text: String) => setEmail(text)}
+                    value={email}></TextInput>
                 <Text style={styles.SubTopic}>Password </Text>
                 <TextInput
                     style={styles.input}
                     placeholder="Password"
-                    secureTextEntry></TextInput>
+                    secureTextEntry
+                    onChangeText={(text: String) => setPassword(text)}
+                    value={password}></TextInput>
                 <Text style={styles.LeftTopic}>Forgot Password?</Text>
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity onPress={()=>signIn()} style={styles.button}>
                     <Text style={styles.buttonText}>LOGIN</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={()=>navigation.navigate('Register')}>
@@ -28,7 +72,9 @@ export default function Login({navigation}:any) {
                 </TouchableOpacity>
                 
             </View>
-        </View>
+            </KeyboardAvoidingView>
+            
+        </ScrollView>
     );
 }
 
@@ -71,7 +117,7 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.secondary,
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
-        height:"100%"
+        height:"80%"
     },
     input: {
         height: 40,
@@ -98,5 +144,8 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.main,
         margin:50,
         borderRadius:30
-    }
+    },
+    spinnerTextStyle: {
+        color: '#FFF',
+      }
 })
