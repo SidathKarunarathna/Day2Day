@@ -6,6 +6,8 @@ import Home from '../Screens/Home';
 import Reports from '../Screens/Reports';
 import CalenderScreen from '../Screens/CalendarScreen';
 import DiaryLists from '../Screens/DiaryList';
+import ViewDiary from '../Screens/ViewDiary';
+import CreateTask from '../Screens/CreateTask';
 
 const stack = createNativeStackNavigator();
 
@@ -15,7 +17,9 @@ export default function App() {
       <stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
         <stack.Screen name="Diary" component={CreateDiary} />
         <stack.Screen name="DiaryList" component={DiaryLists} />
+        <stack.Screen name="ViewDiary" component={ViewDiary} />
         <stack.Screen name="Calendar" component={CalenderScreen} />
+        <stack.Screen name="CreateTask" component={CreateTask} />
         <stack.Screen name="Reports" component={Reports} />
         <stack.Screen name="Home" component={Home} />
       </stack.Navigator>

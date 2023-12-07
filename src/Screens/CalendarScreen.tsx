@@ -1,15 +1,23 @@
-import { Text, View, StyleSheet, ScrollView } from "react-native";
-import React, { useState } from 'react';
+import { Text, View, StyleSheet, ScrollView,TouchableOpacity } from "react-native";
+import React, { useState,useEffect } from 'react';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import Colors from "../../assets/color";
 import Checkbox from 'expo-checkbox';
-
+import { FontAwesome5, Ionicons } from '@expo/vector-icons';
+import { useNavigation } from "@react-navigation/native";
 
 
 export default function CalenderScreen() {
   const [selected, setSelected] = useState('');
   const [isChecked, setChecked] = useState(false);
-
+  const navigation = useNavigation();
+  const [date, setDate] = useState(new Date);
+  useEffect(()=>{
+    const unsubscribe = navigation.addListener('focus', () => {
+      setSelected(date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate());
+    })
+    return unsubscribe
+},[])
   return (
     <View style={{ backgroundColor: Colors.main, height: "100%" }}>
       <Calendar
@@ -46,6 +54,12 @@ export default function CalenderScreen() {
           </View>
         </ScrollView>
       </View>
+      <TouchableOpacity style={styles.floatingButton}
+        onPress={() => navigation.navigate("CreateTask",selected)}>
+        <FontAwesome5
+          name="plus-circle" size={60}
+          color={Colors.main} />
+      </TouchableOpacity>
     </View>
   );
 }
@@ -119,5 +133,14 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.main,
     margin: 50,
     borderRadius: 30
+  },floatingButton: {
+    position: 'absolute',
+    width: 70,
+    height: 70,
+    alignItems: 'center',
+    justifyContent: 'center',
+    right: 30,
+    bottom: 30,
+    backgroundColor: Colors.secondary
   }
 })

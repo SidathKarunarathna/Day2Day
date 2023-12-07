@@ -5,7 +5,7 @@ import Colors from '../../assets/color';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { FIREBASE_APP, FIREBASE_AUTH, FIRESTORE_DB, firebase } from '../../firebaseConfig';
-import { doc, getDoc, query, collection, where,getDocs } from 'firebase/firestore';
+import { doc, getDoc, query, collection, where, getDocs } from 'firebase/firestore';
 
 
 
@@ -16,24 +16,31 @@ export default function DiaryLists() {
   const [data, setData] = useState();
   const [loading, setLoading] = useState(false);
   useEffect(() => {
-    fetchData();
-    
+    setLoading(true);
+    try{
+      fetchData();
+  }catch(error:any){
+      console.log(error)
+      alert('Error:'+error.message);
+  }finally{
+      setLoading(false);
+  }
+
   }, []);
   const fetchData = async () => {
     const userID = FIREBASE_AUTH.currentUser?.uid;
     const q = query(collection(FIRESTORE_DB, "Diary"), where("uid", "==", FIREBASE_AUTH.currentUser?.uid))
     const querySnapshot = await getDocs(q);
-      const diaryList = [];
-        querySnapshot.forEach(doc => {
-          
-          diaryList.push({
-            ...doc.data(),
-            keys:doc.id,
-          })
-          console.log(doc.data().date);
-          setData(diaryList);
+    const diaryList = [];
+    querySnapshot.forEach(doc => {
+
+      diaryList.push({
+        ...doc.data(),
+        keys: doc.id,
+      })
+      setData(diaryList);
     });
-    
+
   }
   return (
     <View>
@@ -51,18 +58,40 @@ export default function DiaryLists() {
             onChangeText={(text: String) => setLastName(text)}
             value={lastName} />
           <View style={styles.Container2}>
+          
             <FlatList
               numColumns={2}
               keyExtractor={(item) => item.id}
               data={data}
               renderItem={({ item }) => (
-                <TouchableOpacity style={[styles.DiaryItem, styles.shadowProp]}>
+                <TouchableOpacity style={[styles.DiaryItem, styles.shadowProp]}
+                  onPress={() => {
+                    console.log(item)
+                    navigation.navigate("ViewDiary", item)
+                  }
+                  }>
                   <Text style={styles.itemHeader}>{item.date}</Text>
                   <Text style={styles.ItemDate}>{item.day}</Text>
                   <View style={styles.icons}>
-                    <FontAwesome5
+                    {item.emoji == "Happy" ? (<FontAwesome5
                       name="smile" size={35}
                       color={Colors.main} />
+                    ) : item.emoji == "Normal" ? (
+                      <FontAwesome5
+                        name="meh" size={35}
+                        color={Colors.main} />
+                    ) : item.emoji == "Tired" ? (
+                      <FontAwesome5
+                        name="tired" size={35}
+                        color={Colors.main} />
+                    ) : item.emoji == "Sad" ? (
+                      <FontAwesome5
+                        name="frown" size={35}
+                        color={Colors.main} />
+                    ) : (<FontAwesome5
+                      name="grin-hearts" size={35}
+                      color={Colors.main} />)}
+
                   </View>
                 </TouchableOpacity>
               )}
@@ -164,7 +193,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     marginTop: 10
   }, spinnerTextStyle: {
-    color: '#FFF',
+    color: Colors.main,
   }, DiaryItem: {
     color: Colors.secondary,
     borderColor: Colors.main,
