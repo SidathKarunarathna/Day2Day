@@ -6,6 +6,7 @@ import CalenderScreen from '../Screens/CalendarScreen';
 import DiaryLists from "../Screens/DiaryList";
 import Colors from "../../assets/color";
 import StackNav from "./StackNav";
+import FriendsPage from "../Screens/ViewFriends";
 
 const Tab = createBottomTabNavigator()
 
@@ -39,12 +40,21 @@ const BottomNav = ()=>{
                 )
             }}/>
             
-            <Tab.Screen name="Profile" component={DiaryLists} options={{
+            <Tab.Screen name="Diary" component={DiaryLists} options={{
                 tabBarIcon:({focused})=>(
                     <TouchableOpacity>
                         {focused ?(
                             <FontAwesome name="book" size={24} color={Colors.main}/>
                         ):(<FontAwesome name="book" size={24} color={Colors.black}/>)}
+                    </TouchableOpacity>
+                )
+            }}/>
+            <Tab.Screen name="Firends" component={FriendsPage} options={{
+                tabBarIcon:({focused})=>(
+                    <TouchableOpacity>
+                        {focused ?(
+                            <FontAwesome5 name="users" size={24} color={Colors.main}/>
+                        ):(<FontAwesome5 name="users" size={24} color={Colors.black}/>)}
                     </TouchableOpacity>
                 )
             }}/>

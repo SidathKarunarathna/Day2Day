@@ -1,7 +1,7 @@
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View, ScrollView } from "react-native";
 import Colors from "../../assets/color";
 import { Picker } from '@react-native-picker/picker';
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { addDoc, collection } from "firebase/firestore";
 import { FIREBASE_AUTH, FIRESTORE_DB } from "../../firebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
@@ -21,14 +21,14 @@ export default function Register() {
     const navigation = useNavigation();
     const auth = FIREBASE_AUTH;
 
-    useEffect(()=>{
-        const unsubscribe = FIREBASE_AUTH.onAuthStateChanged(user=>{
-            if (user){
-                navigation.navigate("Bottom");
+    useEffect(() => {
+        const unsubscribe = FIREBASE_AUTH.onAuthStateChanged(user => {
+            if (user) {
+                navigation.navigate('Bottom' as never);
             }
         })
         return unsubscribe
-    },[])
+    }, [])
     const register = async () => {
         setLoading(true);
         try {
@@ -71,20 +71,23 @@ export default function Register() {
                 <TextInput
                     style={styles.input}
                     placeholder="First Name"
-                    onChangeText={(text: String) => setFirstName(text)}
-                    value={firstName} />
+                    onChangeText={(text: string) => setFirstName(text)}
+                    value={firstName as string | undefined}
+                />
                 <Text style={styles.SubTopic}>Last Name </Text>
                 <TextInput
                     style={styles.input}
                     placeholder="Last Name"
-                    onChangeText={(text: String) => setLastName(text)}
-                    value={lastName} />
+                    onChangeText={(text: string) => setLastName(text)}
+                    value={lastName as string | undefined}
+                />
                 <Text style={styles.SubTopic}>Email </Text>
                 <TextInput
                     style={styles.input}
                     placeholder="John@mail.com"
-                    onChangeText={(text: String) => setEmail(text)}
-                    value={email} />
+                    onChangeText={(text: string) => setEmail(text)}
+                    value={email}
+                />
                 <Text style={styles.SubTopic}>Gender </Text>
                 <View style={styles.dropDown}><Picker style={{ color: Colors.main }}
                     selectedValue={selectedGender}
@@ -100,15 +103,17 @@ export default function Register() {
                     style={styles.input}
                     placeholder="***********"
                     secureTextEntry
-                    onChangeText={(text: String) => setPassword(text)}
-                    value={password} />
+                    onChangeText={(text: string) => setPassword(text)}
+                    value={password}
+                />
                 <Text style={styles.SubTopic}>Confirm Password </Text>
                 <TextInput
                     style={styles.input}
                     placeholder="***********"
                     secureTextEntry
-                    onChangeText={(text: String) => setConPassword(text)}
-                    value={conPassword} />
+                    onChangeText={(text: string) => setConPassword(text)}
+                    value={conPassword as string | undefined}
+                />
                 <TouchableOpacity
                     style={styles.button}
                     onPress={() => register()}>

@@ -8,6 +8,8 @@ import CalenderScreen from '../Screens/CalendarScreen';
 import DiaryLists from '../Screens/DiaryList';
 import ViewDiary from '../Screens/ViewDiary';
 import CreateTask from '../Screens/CreateTask';
+import AddFriendsPage from '../Screens/AddFriend';
+import PendingRequestsPage from '../Screens/ViewPendingRequests';
 
 const stack = createNativeStackNavigator();
 
@@ -22,6 +24,8 @@ export default function App() {
         <stack.Screen name="CreateTask" component={CreateTask} />
         <stack.Screen name="Reports" component={Reports} />
         <stack.Screen name="Home" component={Home} />
+        <stack.Screen name="AddFriend" component={AddFriendsPage} />
+        <stack.Screen name="PendingFriends" component={PendingRequestsPage} />
       </stack.Navigator>
   );
 }

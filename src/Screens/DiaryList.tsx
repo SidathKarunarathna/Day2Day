@@ -67,7 +67,7 @@ export default function DiaryLists() {
                 <TouchableOpacity style={[styles.DiaryItem, styles.shadowProp]}
                   onPress={() => {
                     console.log(item)
-                    navigation.navigate("ViewDiary", item)
+                    navigation.navigate('ViewDiary', item);
                   }
                   }>
                   <Text style={styles.itemHeader}>{item.date}</Text>
@@ -101,7 +101,7 @@ export default function DiaryLists() {
         </View>
       </View>
       <TouchableOpacity style={styles.floatingButton}
-        onPress={() => navigation.navigate("Diary")}>
+        onPress={() => navigation.navigate('Diary' as never)}>
         <FontAwesome5
           name="plus-circle" size={60}
           color={Colors.main} />

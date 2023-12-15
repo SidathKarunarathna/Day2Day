@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TextInput, TouchableOpacity, View, ScrollView, Platform } from "react-native";
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, ScrollView, Platform, TextInputProps } from "react-native";
 import Colors from "../../assets/color";
 import { Picker } from '@react-native-picker/picker';
 import { useState, useEffect } from "react";
@@ -13,11 +13,11 @@ import { FontAwesome5, Ionicons } from '@expo/vector-icons';
 
 export default function CreateTask({ route }: any) {
     const [selectedPriority, setSelectedPriority] = useState();
-    const [description, setDescription] = useState<String | null>(null);
+    const [description, setDescription] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [show, setShow] = useState(false);
     const [mode, setmode] = useState('time');
-    const [pieckedTime, setPieckedTime] = useState('');
+    const [pickedTime, setPickedTime] = useState<string | null>('');
     const [date, setDate] = useState(new Date);
 
     const item = route.params
@@ -28,13 +28,13 @@ export default function CreateTask({ route }: any) {
         setShow(true);
         setmode(currentMode);
     }
-    const onChange = ({ type }: any, selectedDate) => {
-        const currentDate = selectedDate ||date;
-        setShow(Platform.OS==='ios')
+    const onChange = ({ type }: any, selectedDate:any) => {
+        const currentDate = selectedDate || date;
+        setShow(Platform.OS === 'ios')
         setDate(currentDate);
         let tempDate = new Date(currentDate);
-        setPieckedTime(tempDate.getHours()+":"+tempDate.getMinutes());
-        console.log(pieckedTime)
+        setPickedTime(tempDate.getHours() + ":" + tempDate.getMinutes());
+        console.log(pickedTime)
     }
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
@@ -44,16 +44,16 @@ export default function CreateTask({ route }: any) {
     }, [])
     const addTask = async () => {
         const doc = await addDoc(collection(FIRESTORE_DB, 'Tasks'), {
-            date:item,
+            date: item,
             description: description,
-            time: pieckedTime,
+            time: pickedTime,
             priority: selectedPriority,
             userId: FIREBASE_AUTH.currentUser?.uid
         })
         setDescription('');
         setDate(new Date());
-        navigation.navigate("Calendar");
-        
+        navigation.navigate('Calendar' as never);
+
     };
 
     return (
@@ -70,31 +70,43 @@ export default function CreateTask({ route }: any) {
                 <TextInput
                     style={styles.input}
                     placeholder="Description"
-                    onChangeText={(text: String) => setDescription(text)}
-                    value={description} />
+                    onChangeText={(text: string) => {
+                        if (text !== '') {
+                          setDescription(text);
+                        } else {
+                          setDescription(null);
+                        }
+                      }}
+                    value={description !== null ? description : ''} />
                 <Text style={styles.SubTopic}>Time</Text>
-                {show && (<DateTimePicker mode="date"
+                {show && (<DateTimePicker
                     display="default"
                     value={date}
-                    mode={'time'}
+                    mode="time"
                     is24Hour={true}
                     onChange={onChange}
                 />)}
-                <TouchableOpacity onPress={()=>showMode('time') }>
+                <TouchableOpacity onPress={() => showMode('time')}>
                     <View style={styles.input}>
                         <TextInput style={{ color: Colors.main }}
                             placeholder="14:00"
-                            onChangeText={(text: String) => setPieckedTime(text)}
-                            value={pieckedTime}
+                            onChangeText={(text: string) => {
+                                if (text !== '') {
+                                  setPickedTime(text);
+                                } else {
+                                  setPickedTime(null);
+                                }
+                              }}
+                            value={pickedTime !== null ? pickedTime : ''}
                             editable={false} />
-                        <View style={{ alignSelf: "flex-end",marginLeft: "90%" ,marginTop:-20}}>
+                        <View style={{ alignSelf: "flex-end", marginLeft: "90%", marginTop: -20 }}>
                             <Ionicons
                                 name="time" size={25}
                                 color={Colors.main} />
                         </View>
                     </View>
                 </TouchableOpacity>
-                
+
                 <Text style={styles.SubTopic}>Priority </Text>
                 <View style={styles.dropDown}><Picker style={{ color: Colors.main }}
                     selectedValue={selectedPriority}
@@ -186,7 +198,7 @@ const styles = StyleSheet.create({
         marginTop: 250,
         borderRadius: 30,
         marginBottom: 32,
-        
+
     },
     dropDown: {
         color: Colors.main,
