@@ -48,6 +48,7 @@ export default function CreateTask({ route }: any) {
             description: description,
             time: pickedTime,
             priority: selectedPriority,
+            completed:false,
             userId: FIREBASE_AUTH.currentUser?.uid
         })
         setDescription('');
