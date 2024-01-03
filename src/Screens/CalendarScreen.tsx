@@ -5,7 +5,7 @@ import Colors from "../../assets/color";
 import Checkbox from 'expo-checkbox';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
-import { collection, doc, getDocs, query, updateDoc, where } from "firebase/firestore";
+import { collection, doc, getDocs, orderBy, query, updateDoc, where } from "firebase/firestore";
 import { FIREBASE_AUTH, FIRESTORE_DB } from "../../firebaseConfig";
 
 
@@ -16,7 +16,7 @@ export default function CalenderScreen({ navigation: nav }: any) {
   const [date, setDate] = useState(new Date);
   const [tasks, setTasks] = useState<any[]>([]);
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
+   const unsubscribe = navigation.addListener('focus', () => {
       setSelected(date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate());
       console.log(selected);
 
@@ -29,7 +29,7 @@ export default function CalenderScreen({ navigation: nav }: any) {
   }, [selected]);
   const fetchTasks = async () => {
     try {
-      const q = query(collection(FIRESTORE_DB, "Tasks"), where("userId", "==", FIREBASE_AUTH.currentUser?.uid));
+      const q = query(collection(FIRESTORE_DB, "Tasks"), where("userId", "==", FIREBASE_AUTH.currentUser?.uid),orderBy("time"));
       const snapshot = await getDocs(q);
       const Tasks: any[] = [];
       snapshot.forEach((doc) => {
@@ -95,7 +95,8 @@ export default function CalenderScreen({ navigation: nav }: any) {
                 borderWidth: 1,
                 marginLeft: 30,
                 marginRight: 30,
-                borderRadius: 30
+                borderRadius: 30,
+                marginBottom:10
               }}>
                 <Text style={styles.SubTopic}>{item.description}</Text>
                 <Checkbox style={styles.checkbox} value={item.completed} onValueChange={() => handleRequest(item.id,item.completed)} />
@@ -142,7 +143,8 @@ const styles = StyleSheet.create({
   }, SubTopic2: {
     fontSize: 20,
     color: Colors.main,
-    textAlign: 'center'
+    textAlign: 'center',
+    display:"none"
   },
   LeftTopic: {
     fontSize: 16,

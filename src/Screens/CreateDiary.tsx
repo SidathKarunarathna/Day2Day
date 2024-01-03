@@ -12,7 +12,7 @@ import { FIREBASE_AUTH, FIRESTORE_DB } from "../../firebaseConfig";
 import { useNavigation } from "@react-navigation/native";
 
 
-export default function CreateDiary({navigation:nav}) {
+export default function CreateDiary({navigation:nav}:any) {
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const [date, setDate] = useState(new Date);
     const [pageDate, setPageDate] = useState<String | null>(null);

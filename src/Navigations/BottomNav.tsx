@@ -7,6 +7,7 @@ import DiaryLists from "../Screens/DiaryList";
 import Colors from "../../assets/color";
 import StackNav from "./StackNav";
 import FriendsPage from "../Screens/ViewFriends";
+import ViewWalletScreen from "../Screens/ViewWallet";
 
 const Tab = createBottomTabNavigator()
 
@@ -26,6 +27,15 @@ const BottomNav = ()=>{
                         {focused ?(
                             <Entypo name="home" size={24} color={Colors.main}/>
                         ):(<AntDesign name="home" size={24} color={Colors.black}/>)}
+                    </TouchableOpacity>
+                )
+            }}/>
+            <Tab.Screen name="Wallet" component={ViewWalletScreen} options={{
+                tabBarIcon:({focused})=>(
+                    <TouchableOpacity>
+                        {focused ?(
+                            <FontAwesome5 name="wallet" size={24} color={Colors.main}/>
+                        ):(<FontAwesome5 name="wallet" size={24} color={Colors.black}/>)}
                     </TouchableOpacity>
                 )
             }}/>

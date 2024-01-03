@@ -33,7 +33,7 @@ export default function CreateTask({ route }: any) {
         setShow(Platform.OS === 'ios')
         setDate(currentDate);
         let tempDate = new Date(currentDate);
-        setPickedTime(tempDate.getHours() + ":" + tempDate.getMinutes());
+        setPickedTime(tempDate.getHours().toString().padStart(2,'0')+ ":" + tempDate.getMinutes().toString().padStart(2,'0'));
         console.log(pickedTime)
     }
     useEffect(() => {

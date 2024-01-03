@@ -10,14 +10,14 @@ import { doc, getDoc, query, collection, where, getDocs } from 'firebase/firesto
 
 
 
-export default function DiaryLists() {
+export default function DiaryLists({navigation:nav}:any) {
   const [lastName, setLastName] = useState<String | null>(null);
   const navigation = useNavigation();
   const [data, setData] = useState();
   const [loading, setLoading] = useState(false);
   useEffect(() => {
-    setLoading(true);
     try{
+      setLoading(true);
       fetchData();
   }catch(error:any){
       console.log(error)
@@ -26,12 +26,12 @@ export default function DiaryLists() {
       setLoading(false);
   }
 
-  }, []);
+  }, [nav]);
   const fetchData = async () => {
     const userID = FIREBASE_AUTH.currentUser?.uid;
     const q = query(collection(FIRESTORE_DB, "Diary"), where("uid", "==", FIREBASE_AUTH.currentUser?.uid))
     const querySnapshot = await getDocs(q);
-    const diaryList = [];
+    const diaryList:any = [];
     querySnapshot.forEach(doc => {
 
       diaryList.push({
@@ -101,7 +101,7 @@ export default function DiaryLists() {
         </View>
       </View>
       <TouchableOpacity style={styles.floatingButton}
-        onPress={() => navigation.navigate('Diary' as never)}>
+        onPress={() => navigation.navigate("AddDiary" as never)}>
         <FontAwesome5
           name="plus-circle" size={60}
           color={Colors.main} />

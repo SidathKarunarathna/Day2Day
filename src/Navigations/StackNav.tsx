@@ -10,6 +10,9 @@ import ViewDiary from '../Screens/ViewDiary';
 import CreateTask from '../Screens/CreateTask';
 import AddFriendsPage from '../Screens/AddFriend';
 import PendingRequestsPage from '../Screens/ViewPendingRequests';
+import AddExpenseScreen from '../Screens/AddExpense';
+import AddIncomeScreen from '../Screens/AddIncome';
+import ViewWalletScreen from '../Screens/ViewWallet';
 
 const stack = createNativeStackNavigator();
 
@@ -17,7 +20,7 @@ export default function App() {
 
   return (
       <stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
-        <stack.Screen name="Diary" component={CreateDiary} />
+        <stack.Screen name="AddDiary" component={CreateDiary} />
         <stack.Screen name="DiaryList" component={DiaryLists} />
         <stack.Screen name="ViewDiary" component={ViewDiary} />
         <stack.Screen name="Calendar" component={CalenderScreen} />
@@ -26,6 +29,9 @@ export default function App() {
         <stack.Screen name="Home" component={Home} />
         <stack.Screen name="AddFriend" component={AddFriendsPage} />
         <stack.Screen name="PendingFriends" component={PendingRequestsPage} />
+        <stack.Screen name="AddExpense" component={AddExpenseScreen} />
+        <stack.Screen name="AddIncome" component={AddIncomeScreen} />
+        <stack.Screen name="wallet" component={ViewWalletScreen} />
       </stack.Navigator>
   );
 }

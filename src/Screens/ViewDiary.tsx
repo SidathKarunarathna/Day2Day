@@ -117,13 +117,13 @@ export default function ViewDiary({ route }: any) {
         })
 
         //setkey(new Date().getTime());
-        navigation.navigate("DiaryList");
+        navigation.navigate("DiaryList" as never);
     };
     const deletePage = async () => { 
         const doc1 = await deleteDoc(doc(FIRESTORE_DB, 'Diary',item.keys));
 
         //setkey(new Date().getTime());
-        navigation.navigate("DiaryList");
+        navigation.navigate("DiaryList" as never);
     };
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
