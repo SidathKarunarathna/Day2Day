@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Text, Platform, TouchableOpacity } from 'react-native';
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../../firebaseConfig';
 import Colors from '../../assets/color';
@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { addDoc, collection } from 'firebase/firestore';
 
-const AddIncomeScreen = () => {
+const AddIncomeScreen = ({ navigation: nav }: any) => {
     const [Income, setIncome] = useState<number>(0);
     const [description, setDescription] = useState<string>('');
     const [date, setDate] = useState(new Date());
@@ -15,7 +15,10 @@ const AddIncomeScreen = () => {
     const [pageDate, setPageDate] = useState<String | null>(null);
     const [showPicker, setShowPicker] = useState(false);
     const navigation = useNavigation();
-
+   
+    useEffect(() => {
+        setPageDate(date.toDateString())
+     }, [nav])
     const addIncome = async () => {
         try {
             const doc = await addDoc(collection(FIRESTORE_DB, 'Incomes'),{
@@ -28,7 +31,7 @@ const AddIncomeScreen = () => {
             alert('Income added successfully!');
             setIncome(0);
             setDescription('');
-            navigation.navigate("wallet" as never)
+            navigation.goBack()
         } catch (error) {
             console.error('Error adding Income: ', error);
             alert('Failed to add Income. Please try again.');
@@ -59,7 +62,7 @@ const AddIncomeScreen = () => {
                         flexDirection: "row",
                     }}>
                         <TouchableOpacity style={{ alignSelf: "flex-end" }}
-                         onPress={()=>navigation.navigate("wallet")}>
+                         onPress={()=>navigation.goBack()}>
                             <Ionicons
                                 name="close" size={35}
                                 color={Colors.main} />

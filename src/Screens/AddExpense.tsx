@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState ,useEffect} from 'react';
 import { View, TextInput, Button, StyleSheet, Text, Platform, TouchableOpacity } from 'react-native';
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../../firebaseConfig';
 import Colors from '../../assets/color';
@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { addDoc, collection } from 'firebase/firestore';
 
-const AddExpenseScreen = () => {
+const AddExpenseScreen = ({ navigation: nav }: any) => {
     const [expense, setExpense] = useState<number>(0);
     const [description, setDescription] = useState<string>('');
     const [date, setDate] = useState(new Date());
@@ -16,6 +16,9 @@ const AddExpenseScreen = () => {
     const [showPicker, setShowPicker] = useState(false);
     const navigation = useNavigation();
 
+    useEffect(() => {
+        setPageDate(date.toDateString())
+     }, [nav])
     const addExpense = async () => {
         try {
             const doc = await addDoc(collection(FIRESTORE_DB, 'Expenses'),{
@@ -27,7 +30,7 @@ const AddExpenseScreen = () => {
             alert('Expense added successfully!');
             setExpense(0);
             setDescription('');
-            navigation.navigate("wallet" as never)
+            navigation.goBack();
         } catch (error) {
             console.error('Error adding expense: ', error);
             alert('Failed to add expense. Please try again.');
@@ -58,7 +61,7 @@ const AddExpenseScreen = () => {
                         flexDirection: "row",
                     }}>
                         <TouchableOpacity style={{ alignSelf: "flex-end" }}
-                         onPress={()=>navigation.navigate("wallet" as never)}>
+                         onPress={()=>navigation.goBack()}>
                             <Ionicons
                                 name="close" size={35}
                                 color={Colors.main} />

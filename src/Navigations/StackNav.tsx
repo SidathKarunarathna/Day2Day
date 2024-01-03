@@ -13,6 +13,8 @@ import PendingRequestsPage from '../Screens/ViewPendingRequests';
 import AddExpenseScreen from '../Screens/AddExpense';
 import AddIncomeScreen from '../Screens/AddIncome';
 import ViewWalletScreen from '../Screens/ViewWallet';
+import ViewMonthlyExpenses from '../Components/ViewMonthlyExpenses';
+import ViewMonthlyIncomes from '../Components/ViewMonthlyIncomes';
 
 const stack = createNativeStackNavigator();
 
@@ -32,6 +34,8 @@ export default function App() {
         <stack.Screen name="AddExpense" component={AddExpenseScreen} />
         <stack.Screen name="AddIncome" component={AddIncomeScreen} />
         <stack.Screen name="wallet" component={ViewWalletScreen} />
+        <stack.Screen name="monthlyExpenses" component={ViewMonthlyExpenses} />
+        <stack.Screen name="monthlyIncomes" component={ViewMonthlyIncomes} />
       </stack.Navigator>
   );
 }

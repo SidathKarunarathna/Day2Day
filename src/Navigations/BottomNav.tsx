@@ -30,16 +30,7 @@ const BottomNav = ()=>{
                     </TouchableOpacity>
                 )
             }}/>
-            <Tab.Screen name="Wallet" component={ViewWalletScreen} options={{
-                tabBarIcon:({focused})=>(
-                    <TouchableOpacity>
-                        {focused ?(
-                            <FontAwesome5 name="wallet" size={24} color={Colors.main}/>
-                        ):(<FontAwesome5 name="wallet" size={24} color={Colors.black}/>)}
-                    </TouchableOpacity>
-                )
-            }}/>
-            <Tab.Screen name="Cart" component={CalenderScreen} options={{
+            <Tab.Screen name="Calendar" component={CalenderScreen} options={{
                 //
                 tabBarIcon:({focused})=>(
                     <TouchableOpacity>
@@ -49,7 +40,15 @@ const BottomNav = ()=>{
                     </TouchableOpacity>
                 )
             }}/>
-            
+            <Tab.Screen name="Wallet" component={ViewWalletScreen} options={{
+                tabBarIcon:({focused})=>(
+                    <TouchableOpacity>
+                        {focused ?(
+                            <FontAwesome5 name="wallet" size={24} color={Colors.main}/>
+                        ):(<FontAwesome5 name="wallet" size={24} color={Colors.black}/>)}
+                    </TouchableOpacity>
+                )
+            }}/>
             <Tab.Screen name="Diary" component={DiaryLists} options={{
                 tabBarIcon:({focused})=>(
                     <TouchableOpacity>
@@ -59,7 +58,7 @@ const BottomNav = ()=>{
                     </TouchableOpacity>
                 )
             }}/>
-            <Tab.Screen name="Firends" component={FriendsPage} options={{
+            {/* <Tab.Screen name="Firends" component={FriendsPage} options={{
                 tabBarIcon:({focused})=>(
                     <TouchableOpacity>
                         {focused ?(
@@ -67,7 +66,7 @@ const BottomNav = ()=>{
                         ):(<FontAwesome5 name="users" size={24} color={Colors.black}/>)}
                     </TouchableOpacity>
                 )
-            }}/>
+            }}/> */}
         </Tab.Navigator>
     )
 }

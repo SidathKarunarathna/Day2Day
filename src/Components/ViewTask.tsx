@@ -1,43 +1,19 @@
 import { Text, View, StyleSheet, ScrollView, TouchableOpacity, FlatList } from "react-native";
 import React, { useState, useEffect } from 'react';
-import { Calendar, LocaleConfig } from 'react-native-calendars';
 import Colors from "../../assets/color";
 import Checkbox from 'expo-checkbox';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
 import { collection, doc, getDocs, orderBy, query, updateDoc, where } from "firebase/firestore";
 import { FIREBASE_AUTH, FIRESTORE_DB } from "../../firebaseConfig";
-import ViewTask from "../Components/ViewTask";
-import MyTabs from "../Navigations/TabNav";
-import { da } from "date-fns/locale";
 
 
-export default function CalenderScreen({ navigation: nav }: any) {
-  const [selected, setSelected] = useState('');
-  const [selected2, setSelected2] = useState<any[]>([]);
+export default function ViewTask({ tasks,selected}: any) {
   const [isChecked, setChecked] = useState(false);
   const navigation = useNavigation();
   const [date, setDate] = useState(new Date);
-  const [tasks, setTasks] = useState<any>([]);
-  const [date1, setDate1] = useState(0);
-  const [month, setMonth] = useState(0);
-  const [year, setYear] = useState(0);
-
-  
-  useEffect(() => {
-   const unsubscribe = navigation.addListener('focus', () => {
-      setSelected(date.getFullYear() + "-" + (date.getMonth() + 1).toString().padStart(2,'0') + "-" + date.getDate().toString().padStart(2,'0'));
-      setDate1(date.getDate());
-      setMonth(date.getMonth()+1)
-      setYear(date.getFullYear())
-      console.log(selected);
-    })
-    fetchTasks();
-    return unsubscribe
-  }, [nav])
-  useEffect(() => {
-    console.log(selected);
-  }, [selected]);
+  //const [tasks, setTasks] = useState<any[]>([]);
+ 
   const fetchTasks = async () => {
     try {
       const q = query(collection(FIRESTORE_DB, "Tasks"), where("userId", "==", FIREBASE_AUTH.currentUser?.uid),orderBy("time"));
@@ -56,7 +32,7 @@ export default function CalenderScreen({ navigation: nav }: any) {
         });
       });
 
-      setTasks(Tasks);
+      tasks=Tasks;
     } catch (error) {
       console.error('Error fetching approved friends: ', error);
     }
@@ -74,28 +50,39 @@ export default function CalenderScreen({ navigation: nav }: any) {
   };
 
   return (
-    <View style={{ backgroundColor: Colors.main, height: "100%" }}>
-      <Calendar
-        onDayPress={day => {
-          setSelected(day.dateString);
-          setDate1(day.day);
-          setMonth(day.month);
-          setYear(day.year);
-        }}
-        theme={{
-          backgroundColor: Colors.main,
-          calendarBackground: Colors.main,
-          dayTextColor: Colors.secondary,
-          selectedDayBackgroundColor: Colors.secondary,
-          selectedDayTextColor: Colors.main,
-          todayTextColor: Colors.deepGray,
-          monthTextColor: Colors.secondary
-        }}
-        markedDates={{
-          [selected]: { selected: true, disableTouchEvent: true, dotColor: Colors.main }
-        }}
-      />
-      <MyTabs tasks={tasks} selected={selected} date={date1} month={month} year={year}/>
+    <View style={{ backgroundColor: Colors.secondary, height: "100%" }}>
+      <View style={styles.section}>
+        <FlatList
+          data={tasks}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <View >
+              {item.date === selected ? (<View style={{
+                display: "flex",
+                flexDirection: "row",
+                borderColor: Colors.main,
+                borderWidth: 1,
+                marginLeft: 30,
+                marginRight: 30,
+                borderRadius: 30,
+                marginBottom:10
+              }}>
+                <Text style={styles.SubTopic}>{item.description}</Text>
+                <Checkbox style={styles.checkbox} value={item.completed} onValueChange={() => handleRequest(item.id,item.completed)} />
+              </View>
+              ) : (<View>
+                <Text style={styles.SubTopic2}></Text>
+              </View>)}
+
+            </View>
+          )} />
+      </View>
+      <TouchableOpacity style={styles.floatingButton}
+        onPress={() => navigation.navigate("CreateTask", selected)}>
+        <FontAwesome5
+          name="plus-circle" size={60}
+          color={Colors.main} />
+      </TouchableOpacity>
     </View>
   );
 }
