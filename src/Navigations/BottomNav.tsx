@@ -15,7 +15,7 @@ const Tab = createBottomTabNavigator()
 
 const BottomNav = ()=>{
     return(
-        <Tab.Navigator backBehavior="main" initialRouteName="Main" screenOptions={{
+        <Tab.Navigator  initialRouteName="Main" screenOptions={{
            tabBarShowLabel:false,
            tabBarStyle:{...styles.tab},
             headerShown:false,
@@ -31,7 +31,6 @@ const BottomNav = ()=>{
                 )
             }}/>
             <Tab.Screen name="Calendar" component={CalenderScreen} options={{
-                //
                 tabBarIcon:({focused})=>(
                     <TouchableOpacity>
                         {focused ?(

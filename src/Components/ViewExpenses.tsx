@@ -28,9 +28,10 @@ export default function ViewExpenses({date,month,year}:any){
           ...doc.data(),
           keys: doc.id,
         })
-        console.log(expense)
-        setExpenses(expense);
+       
       });      
+      console.log(expense)
+      setExpenses(expense);
     } catch (error) {
       console.error('Error fetching expenses: ', error);
     }
@@ -47,9 +48,10 @@ export default function ViewExpenses({date,month,year}:any){
           ...doc.data(),
           keys: doc.id,
         })
-        console.log(Income)
-        setIncomes(Income);
-      });      
+       
+      });     
+      console.log(Income)
+      setIncomes(Income); 
     } catch (error) {
       console.error('Error fetching Incomes: ', error);
     }

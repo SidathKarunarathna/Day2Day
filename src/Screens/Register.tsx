@@ -93,6 +93,7 @@ export default function Register() {
                     selectedValue={selectedGender}
                     onValueChange={(itemValue, itemIndex) =>
                         setSelectedGender(itemValue)
+                        
                     }>
                     <Picker.Item label="-Select Gender-" value=" " />
                     <Picker.Item label="Male" value="Male" />
