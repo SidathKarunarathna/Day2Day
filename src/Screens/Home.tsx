@@ -198,6 +198,9 @@ export default function Home({ navigation: nav }: any) {
 
       <Text style={styles.SubTopic3}>{`Rs.${totalBalance}.00`}</Text>
       </TouchableOpacity>)}
+      <TouchableOpacity onPress={() => navigation.navigate('MonthlyReport' as never)}>
+                    <Text style={styles.LeftTopic}>See more</Text>
+                </TouchableOpacity>
             </View>
         </View>
     );

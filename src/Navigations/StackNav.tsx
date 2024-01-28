@@ -15,6 +15,9 @@ import AddIncomeScreen from '../Screens/AddIncome';
 import ViewWalletScreen from '../Screens/ViewWallet';
 import ViewMonthlyExpenses from '../Components/ViewMonthlyExpenses';
 import ViewMonthlyIncomes from '../Components/ViewMonthlyIncomes';
+import AddCategoryScreen from '../Components/AddCategory';
+import AddIncomeCategoryScreen from '../Components/AddIncomeCategory';
+import MonthlyReport from '../Components/MonthlyReport';
 
 const stack = createNativeStackNavigator();
 
@@ -36,6 +39,9 @@ export default function App() {
         <stack.Screen name="wallet" component={ViewWalletScreen} />
         <stack.Screen name="monthlyExpenses" component={ViewMonthlyExpenses} />
         <stack.Screen name="monthlyIncomes" component={ViewMonthlyIncomes} />
+        <stack.Screen name="AddCategory" component={AddCategoryScreen}/>
+        <stack.Screen name="AddIncomeCategory" component={AddIncomeCategoryScreen}/>
+        <stack.Screen name='MonthlyReport' component={MonthlyReport}/>
       </stack.Navigator>
   );
 }

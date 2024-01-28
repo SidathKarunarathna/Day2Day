@@ -41,7 +41,9 @@ export default function ViewDiary({ route }: any) {
         if (!result.canceled) {
             const base64 = await FileSystem.readAsStringAsync(result.assets[0].uri, { encoding: 'base64' });
             let imageData = `data:image/jpg;base64,${base64}`;
+            //@ts-ignore
             richText.current.insertImage(imageData);
+            //@ts-ignore
             richText.current.disabled = false;
         }
     }
@@ -51,6 +53,7 @@ export default function ViewDiary({ route }: any) {
         }
         
     }
+    //@ts-ignore
     const onChange = ({ type }, selectedDate) => {
         if (type == "set") {
             const currentDate = selectedDate;
@@ -136,6 +139,7 @@ export default function ViewDiary({ route }: any) {
             setEditable(false);
             setEmoji("");
             setPage("")
+            //@ts-ignore
             richText.current?.setContentHTML(null);
             console.log(item)
             if (item.emoji == "Happy") {
@@ -152,6 +156,7 @@ export default function ViewDiary({ route }: any) {
 
             setPageDate(item.date)
             setEmoji(item.emoji);
+            //@ts-ignore
             richText.current?.setContentHTML(item.data);
         });
         return unsubscribe;
@@ -166,7 +171,7 @@ export default function ViewDiary({ route }: any) {
                         flexDirection: "row",
                     }}>
                         <TouchableOpacity style={{ alignSelf: "flex-end" }}
-                            onPress={() => navigation.navigate("DiaryList")}>
+                            onPress={() => navigation.navigate("DiaryList" as never )}>
                             <Ionicons
                                 name="close" size={35}
                                 color={Colors.main} />
@@ -222,6 +227,7 @@ export default function ViewDiary({ route }: any) {
                                         <TextInput style={{ color: Colors.main }}
                                             placeholder="Sat Aug 21 2023"
                                             onChangeText={(text: String) => setPageDate(text)}
+                                            //@ts-ignore
                                             value={pageDate}
                                             editable={false} />
                                         <View style={{ alignSelf: "flex-end", marginLeft: "60%" }}>

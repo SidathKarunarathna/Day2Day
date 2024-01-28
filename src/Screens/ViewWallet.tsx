@@ -65,7 +65,22 @@ export default function ViewWalletScreen({navigation:nav}:any){
   return (
     <View style={styles.Container}>
         <View style={styles.section}>
+        <View style={{
+                    display: "flex",
+                    flexDirection: "row",
+                }}>
         <Text style={styles.Header}>Wallet</Text>
+        <TouchableOpacity style={{ alignSelf: "flex-end", marginLeft: "20%" }}
+                        onPress={() => {
+                            fetchExpenses();
+                            fetchIncomes();
+                        }}>
+                        <Ionicons
+                            name="refresh" size={40}
+                            color={Colors.main}
+                        />
+                    </TouchableOpacity>
+        </View>
         <View style={styles.iconsSection}>
         <Text style={styles.SubTopic}>Expenses</Text>
         <TouchableOpacity 
@@ -133,15 +148,15 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.main,
     },
     Header: {
-        marginLeft: 0,
-        fontSize: 24,
-        width: "100%",
-        marginTop: 30,
-        marginBottom: 20,
-        alignItems: "center",
-        textAlign: "center",
-        color: Colors.main,
-        fontWeight: "bold"
+      marginLeft: 130,
+      fontSize: 24,
+      width: "30%",
+      marginTop: 30,
+      marginBottom: 20,
+      alignItems: "center",
+      textAlign: "center",
+      color: Colors.main,
+      fontWeight: "bold",
     },
     SubTopic: {
         marginLeft: 30,

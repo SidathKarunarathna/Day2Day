@@ -48,10 +48,10 @@ export default function ViewExpenses({date,month,year}:any){
           ...doc.data(),
           keys: doc.id,
         })
-       
-      });     
+        
+      }); 
       console.log(Income)
-      setIncomes(Income); 
+        setIncomes(Income);     
     } catch (error) {
       console.error('Error fetching Incomes: ', error);
     }

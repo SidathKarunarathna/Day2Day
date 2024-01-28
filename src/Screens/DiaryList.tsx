@@ -56,6 +56,7 @@ export default function DiaryLists({navigation:nav}:any) {
             style={styles.input}
             placeholder="Search"
             onChangeText={(text: String) => setLastName(text)}
+            //@ts-ignore
             value={lastName} />
           <View style={styles.Container2}>
           
@@ -67,6 +68,7 @@ export default function DiaryLists({navigation:nav}:any) {
                 <TouchableOpacity style={[styles.DiaryItem, styles.shadowProp]}
                   onPress={() => {
                     console.log(item)
+                    //@ts-ignore
                     navigation.navigate('ViewDiary', item);
                   }
                   }>

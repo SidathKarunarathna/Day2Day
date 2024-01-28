@@ -1,49 +1,39 @@
-import React, { useEffect, useState } from 'react';
-import { View, TextInput, Button, StyleSheet, Text, Platform, TouchableOpacity } from 'react-native';
+import React, { useState ,useEffect} from 'react';
+import { View, TextInput, Button, StyleSheet, Text, Platform, TouchableOpacity ,FlatList} from 'react-native';
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../../firebaseConfig';
 import Colors from '../../assets/color';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { addDoc, collection, getDocs, query, where } from 'firebase/firestore';
+import { Query, addDoc, collection, getDocs, query, where } from 'firebase/firestore';
 import { Picker } from '@react-native-picker/picker';
 
-const AddIncomeScreen = ({ navigation: nav }: any) => {
-    const [Income, setIncome] = useState<number>(0);
-    const [description, setDescription] = useState<string>('');
-    const [date, setDate] = useState(new Date());
-    const [showDatePicker, setShowDatePicker] = useState(false);
-    const [pageDate, setPageDate] = useState<String | null>(null);
-    const [showPicker, setShowPicker] = useState(false);
+const AddCategoryScreen = ({ navigation: nav }: any) => {
+    const [ExpenseCategory, setExpenseCategory] = useState<string>('');
     const navigation = useNavigation();
-    const [selectedCategory, setSelectedCategory] = useState();
     const [Categories, setCategories] = useState<any[]>([]);
+
     useEffect(() => {
-        setPageDate(date.toDateString());
         fetchCategories();
+
      }, [nav])
-    const addIncome = async () => {
+    const addExpenseCategory = async () => {
         try {
-            const doc = await addDoc(collection(FIRESTORE_DB, 'Incomes'),{
-                amount: Income,
-                description,
-                date,
-                category:selectedCategory,
+            const doc = await addDoc(collection(FIRESTORE_DB, 'Expense Categories'),{
+                category: ExpenseCategory,
                 Uid:FIREBASE_AUTH.currentUser?.uid
               });
-              
-            alert('Income added successfully!');
-            setIncome(0);
-            setDescription('');
-            navigation.goBack()
+            alert('Expense Category added successfully!');
+            setExpenseCategory('');
+            navigation.goBack();
         } catch (error) {
-            console.error('Error adding Income: ', error);
-            alert('Failed to add Income. Please try again.');
+            console.error('Error adding Expense Category: ', error);
+            alert('Failed to add Expense Category. Please try again.');
         }
     };
     const fetchCategories = async () => {
         try {
-            const q = query(collection(FIRESTORE_DB, "Income Categories"), where("Uid", "==", FIREBASE_AUTH.currentUser?.uid));
+            const q = query(collection(FIRESTORE_DB, "Expense Categories"), where("Uid", "==", FIREBASE_AUTH.currentUser?.uid));
             const snapshot = await getDocs(q);
 
             const Categories: any[] = [];
@@ -57,27 +47,9 @@ const AddIncomeScreen = ({ navigation: nav }: any) => {
             console.log(Categories);
             setCategories(Categories);
         } catch (error) {
-            console.error('Error fetching Income Categories: ', error);
+            console.error('Error fetching Expense Categories: ', error);
         }
     };
-    const toggleDatePicker = () => {
-        setShowPicker(!showPicker);
-    }
-    //@ts-ignore
-    const onChange = ({ type }, selectedDate) => {
-        if (type == "set") {
-            const currentDate = selectedDate;
-            setDate(currentDate);
-            if (Platform.OS === "android") {
-                toggleDatePicker();
-                setPageDate(currentDate.toDateString());
-            }
-        }
-        else {
-            toggleDatePicker();
-        }
-    }
-
     return (
         <View style={styles.Container}>
             <View style={styles.section}>
@@ -91,67 +63,29 @@ const AddIncomeScreen = ({ navigation: nav }: any) => {
                                 name="close" size={35}
                                 color={Colors.main} />
                         </TouchableOpacity>
-                        <Text style={[styles.Header,{width:"80%",marginTop:40}]}>Add Income</Text>
+                        <Text style={[styles.Header,{width:"80%",marginTop:40}]}>Expense Categories</Text>
                     </View>
-            <Text style={styles.SubTopic}>Amount</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Enter Amount"
-                    value={Income.toString()}
-                    keyboardType="numeric"
-                    onChangeText={(text) => {
-                        if(text===''){
-                            setIncome(0)
-                        }else{setIncome(parseInt(text))}
-                        }}
-                />
-                <Text style={styles.SubTopic}>Description</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Enter Description"
-                    value={description}
-                    onChangeText={(text) => setDescription(text)}
-                />
-                <View>
-                    <Text style={styles.SubTopic}>Date</Text>
-                    {showPicker && (<DateTimePicker mode="date"
-                        display="spinner"
-                        value={date}
-                        onChange={onChange}
-                    />)}
-                    <TouchableOpacity onPress={toggleDatePicker}>
-                        <View style={styles.input}>
-                            <TextInput style={{ color: Colors.main }}
-                                placeholder="Sat Aug 21 2023"
-                                onChangeText={(text: String) => setPageDate(text)}
-                                //@ts-ignore
-                                value={pageDate}
-                                editable={false} />
-                            <View style={{ alignSelf: "flex-end", marginLeft: "60%",marginTop:-20 }}>
-                                <Ionicons
-                                    name="calendar" size={20}
-                                    color={Colors.main} />
-                            </View>
-                        </View>
-
-                    </TouchableOpacity>
+                    <View style={styles.section2}>
+                    <FlatList
+                        data={Categories}
+                        keyExtractor={(item) => item.id}
+                        renderItem={({ item }) => (
+                            <View style={[styles.iconsSection, styles.DiaryItem, styles.shadowProp]}>
+                            <Text style={styles.SubTopic}>{item.category}</Text>
+                          </View>
+                        )} />
                 </View>
-                <View style={styles.dropDown}><Picker style={{ color: Colors.main }}
-                    selectedValue={selectedCategory}
-                    onValueChange={(itemValue, itemIndex) =>
-                        setSelectedCategory(itemValue)
-                    }>
-                    <Picker.Item label="-Select Category-" value=" " />
-                    {Categories.map((Item, index) => (
-                        <Picker.Item key={index} label={Item.category} value={Item.category} />
-                    ))}
-                </Picker></View>
-                <TouchableOpacity onPress={() => navigation.navigate('AddIncomeCategory' as never)}>
-                    <Text style={styles.LeftTopic}>Add more Categories</Text>
-                </TouchableOpacity>
+                <Text style={styles.SubTopic}>Add More</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Enter Category"
+                    value={ExpenseCategory}
+                    onChangeText={(text) => setExpenseCategory(text)}
+                />
+
                 <TouchableOpacity
                     style={styles.button}
-                    onPress={() =>addIncome()}>
+                    onPress={() =>addExpenseCategory()}>
                     <Text style={styles.buttonText}>Add</Text>
                 </TouchableOpacity>
             </View>
@@ -205,7 +139,7 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.white,
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
-        height: "100%"
+        height: "60%"
     },
     input: {
         height: 40,
@@ -294,4 +228,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default AddIncomeScreen;
+export default AddCategoryScreen;

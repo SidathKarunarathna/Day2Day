@@ -13,6 +13,7 @@ const Colors = {
     underline:"#E5E5E5",
     paypal:"#FFB730",
     secondary:"#FAFEFC",
-    lightDark:"#EAF3FB",}
+    lightDark:"#EAF3FB",
+darkblue:'#00008B'}
 
 export default Colors;

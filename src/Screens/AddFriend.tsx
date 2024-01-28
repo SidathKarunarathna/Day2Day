@@ -78,10 +78,16 @@ export default function AddFriendsPage() {
 
                 <FlatList
                     data={searchResults}
-                    keyExtractor={(item) => item.id}
+                    //@ts-ignore
+                    keyExtractor={(item) => item.id }
                     renderItem={({ item }) => (
                         <View style={[styles.iconsSection,styles.DiaryItem,styles.shadowProp]} >
-                            <Text style={styles.SubTopic}>{item.firstName} {item.lastName}</Text>
+                            <Text style={styles.SubTopic}>{
+                                //@ts-ignore
+                            item.firstName
+                            } {
+                            //@ts-ignore
+                            item.lastName}</Text>
                             <TouchableOpacity
                                 
                                 onPress={() => sendFriendRequest(item)}>
