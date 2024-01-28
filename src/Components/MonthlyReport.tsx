@@ -8,7 +8,9 @@ import { useEffect, useState } from "react";
 import { firebase } from "@react-native-firebase/auth";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
-import { PieChart,LineChart } from 'react-native-chart-kit';
+import { PieChart } from 'react-native-chart-kit';
+import { YAxis,LineChart,Grid } from 'react-native-svg-charts';
+
 
 
 
@@ -41,7 +43,10 @@ export default function MonthlyReport({ navigation: nav }: any) {
     const [monthBalance, setMonthBalance] = useState<number[]>([]);
     const [monthIncome, setMonthIncome] = useState<number>(0);
     const [monthExpense, setMonthExpense] = useState<number>(0);
-
+    const [uniqueChartData, setUniqueChartData] = useState<{ labels: string[]; datasets: { data: number[] }[] }>({
+        labels: [],
+        datasets: [{ data: [] }],
+    });
 
     const fetchExpenses = async () => {
         try {
@@ -124,7 +129,6 @@ export default function MonthlyReport({ navigation: nav }: any) {
         }));
 
         setTotalIncomesByCategory(data);
-        console.log(totalIncomesByCategory);
     };
 
     //const totalExpensesByCategory = calculateTotalExpensesByCategory();
@@ -145,7 +149,7 @@ export default function MonthlyReport({ navigation: nav }: any) {
         setTotalExpenses(expensesTotal);
         const incomesTotal = incomes.reduce((acc, item) => {
             const incomeDate = item.date.toDate();
-           // console.log(incomeDate);
+            // console.log(incomeDate);
             //console.log(acc)
             if (
                 incomeDate.getMonth() + 1 === date.getMonth() + 1 &&
@@ -166,11 +170,17 @@ export default function MonthlyReport({ navigation: nav }: any) {
             //console.log(selected);
         })
         fetchExpenses();
+        console.log("Expensess fetched");
         fetchIncomes();
+        console.log("incomes fetched");
         calculateTotalExpensesByCategory();
+        console.log("Expensess by category fetched");
         calculateTotalIncomesByCategory();
+        console.log("incomes by category fetched");
         generateMonthDays();
+        console.log("get months days fetched");
         calculateBalanceOverMonth();
+        console.log("balances fetched");
         return unsubscribe
     }, [nav])
     useEffect(() => {
@@ -194,52 +204,65 @@ export default function MonthlyReport({ navigation: nav }: any) {
         const monthBalanceArray: number[] = [];
         let currentBalance = 0;
         const currentDate = new Date();
-    const month = currentDate.getMonth();
-    const year = currentDate.getFullYear();
-    
+        const month = currentDate.getMonth();
+        const year = currentDate.getFullYear();
+
         monthDays.forEach((day) => {
-            
-    
-            const totalDayExpense =  expenses.reduce((acc, item) => {
+            const totalDayExpense = expenses.reduce((acc, item) => {
                 const expenseDate = item.date.toDate();
                 if (
-                    expenseDate.getDate() === day&&
+                    expenseDate.getDate() === day &&
                     expenseDate.getMonth() + 1 === date.getMonth() + 1 &&
                     expenseDate.getFullYear() === date.getFullYear()
                 ) {
                     return acc + item.amount;
                 }
-    
+
                 return acc;
-    
+
             }, 0);
-            const totalDayIncome =  incomes.reduce((acc, item) => {
+            const totalDayIncome = incomes.reduce((acc, item) => {
                 const incomeDate = item.date.toDate();
                 if (
-                    incomeDate.getDate() === day&&
+                    incomeDate.getDate() === day &&
                     incomeDate.getMonth() + 1 === date.getMonth() + 1 &&
                     incomeDate.getFullYear() === date.getFullYear()
                 ) {
                     return acc + item.amount;
                 }
-    
+
                 return acc;
             }, 0);
             currentBalance += totalDayIncome - totalDayExpense;
-    
+
             monthBalanceArray.push(currentBalance);
             setMonthIncome(prev => prev + totalDayIncome);
             setMonthExpense(prev => prev + totalDayExpense);
         });
-        console.log(monthBalanceArray);
+        //console.log(monthBalanceArray);
         setMonthBalance(monthBalanceArray);
+        console.log(monthBalance)
     };
-    
+
 
     const chartData = {
-        labels:['1', '', '', '', '5', '', '', '', '10', '', '', '', '15', '', '', '', '20', '', '', '', '25', '', '', '', '30'],
+        labels: monthDays.map(String),
         datasets: [{ data: monthBalance }]
     };
+    useEffect(() => {
+        const updatedChartData = { ...uniqueChartData };
+        monthBalance.forEach((balance: number, index: number) => {
+            // Check if the current balance is different from the previous one or it's the first element
+            if (index === 0 || balance !== monthBalance[index - 1]) {
+                updatedChartData.labels.push(monthDays[index].toString()); // Add the day to labels
+                updatedChartData.datasets[0].data.push(balance); // Add the balance to data
+            }
+        });
+        setUniqueChartData(updatedChartData);
+    }, [monthBalance, monthDays]);
+    const labels = ['1', '', '', '', '5', '', '', '', '10', '', '', '', '15', '', '', '', '20', '', '', '', '25', '', '', '', '30'];
+    const yLabels = [...new Set(monthBalance.filter(value => value !== 0))];
+    const contentInset = { top: 20, bottom: 20 }
     return (
         <View style={styles.Container}>
             <View style={styles.section}>
@@ -255,7 +278,7 @@ export default function MonthlyReport({ navigation: nav }: any) {
                             calculateTotalExpensesByCategory();
                             calculateTotalIncomesByCategory();
                             generateMonthDays();
-        calculateBalanceOverMonth();
+                            calculateBalanceOverMonth();
                         }}>
                         <Ionicons
                             name="refresh" size={40}
@@ -325,28 +348,45 @@ export default function MonthlyReport({ navigation: nav }: any) {
                         <Text>No data available</Text>
                     )}
 
-<Text style={[styles.SubTopic4]}>Balance over Month</Text>
-<LineChart
-                data={chartData}
-                width={390}
-                height={220}
-                yAxisLabel="Rs"
-                chartConfig={{
-                    backgroundColor: Colors.main,
-                    backgroundGradientFrom: Colors.main,
-                    backgroundGradientTo: Colors.secondary,
-                    decimalPlaces: 2,
-                    color: (opacity = 1) => `rgba(0, 0, 139, ${opacity})`,
-                    labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                    propsForDots: {
-                        r: '4',
-                        strokeWidth: '2',
-                        stroke: Colors.secondary,
-                    }
-                }}
-                bezier
-                style={styles.chart}
-            />
+                    <Text style={[styles.SubTopic4]}>Balance over Month</Text>
+
+                    {chartData.datasets.length > 0 ? (
+                   <View style={{ height: 200, padding: 20 ,marginBottom:100 }}>
+                    <View style={{ height: 200, flexDirection: 'row' }}>
+                     <YAxis
+                    data={monthBalance}
+                    contentInset={contentInset}
+                    svg={{
+                        fill: 'grey',
+                        fontSize: 10,
+                    }}
+                    numberOfTicks={10}
+                    formatLabel={(value) => `RS.${value}`}
+                />
+                   <LineChart
+                     style={{ flex: 1 }}
+                     data={monthBalance}
+                     svg={{ stroke: 'rgb(0, 0, 139)',strokeWidth:3 }}
+                     contentInset={{ top: 20, bottom: 20 }}
+                     xAccessor={({ index }) => index}
+                     yAccessor={({ item }) => item}
+                     animate
+                     
+                   >
+                     <Grid />
+                   </LineChart>
+                   </View>
+                   <View style={{ flexDirection: 'row', justifyContent: 'space-between',marginLeft:40 }}>
+                     {labels.map((label, index) => (
+                       <Text key={index} style={{ textAlign: 'center' }}>
+                         {label}
+                       </Text>
+                     ))}
+                   </View>
+          
+                 </View>): (
+                        <Text>No data available</Text>
+                    )}
                 </ScrollView>
             </View>
         </View>

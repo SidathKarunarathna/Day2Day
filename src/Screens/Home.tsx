@@ -10,6 +10,7 @@ import { useNavigation } from "@react-navigation/native";
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
 
 
+
 export default function Home({ navigation: nav }: any) {
     const [selected, setSelected] = useState('');
     const [isChecked, setChecked] = useState(false);
