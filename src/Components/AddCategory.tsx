@@ -5,7 +5,7 @@ import Colors from '../../assets/color';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { Query, addDoc, collection, getDocs, query, where } from 'firebase/firestore';
+import { Query, addDoc, collection, deleteDoc, doc, getDocs, query, where } from 'firebase/firestore';
 import { Picker } from '@react-native-picker/picker';
 
 const AddCategoryScreen = ({ navigation: nav }: any) => {
@@ -50,6 +50,15 @@ const AddCategoryScreen = ({ navigation: nav }: any) => {
             console.error('Error fetching Expense Categories: ', error);
         }
     };
+    const deleteCategory= async (item:any) => { 
+        console.log(item);
+        if (!item || !item.id) {
+            console.error('Invalid item:', item);
+            return;
+        }
+        const doc1 = await deleteDoc(doc(FIRESTORE_DB, 'Expense Categories',item.id));
+        fetchCategories();
+    };
     return (
         <View style={styles.Container}>
             <View style={styles.section}>
@@ -72,6 +81,12 @@ const AddCategoryScreen = ({ navigation: nav }: any) => {
                         renderItem={({ item }) => (
                             <View style={[styles.iconsSection, styles.DiaryItem, styles.shadowProp]}>
                             <Text style={styles.SubTopic}>{item.category}</Text>
+                            <TouchableOpacity  onPress={() =>deleteCategory(item)}>
+                                    <FontAwesome5
+                        
+                                        name="trash" size={25}
+                                        color={Colors.main} />
+                                        </TouchableOpacity>
                           </View>
                         )} />
                 </View>

@@ -37,6 +37,7 @@ export default function CalenderScreen({ navigation: nav }: any) {
   }, [nav])
   useEffect(() => {
     console.log(selected);
+    fetchTasks();
   }, [selected]);
   const fetchTasks = async () => {
     try {

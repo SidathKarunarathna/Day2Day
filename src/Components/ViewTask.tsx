@@ -78,6 +78,7 @@ export default function ViewTask({ tasks,selected}: any) {
           )} />
       </View>
       <TouchableOpacity style={styles.floatingButton}
+      //@ts-ignore
         onPress={() => navigation.navigate("CreateTask", selected)}>
         <FontAwesome5
           name="plus-circle" size={60}
