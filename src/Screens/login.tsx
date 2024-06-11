@@ -1,33 +1,82 @@
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView, ScrollView } from "react-native";
 import Colors from "../../assets/color";
+import { useEffect, useState } from "react";
+import { tr } from "date-fns/locale";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { FIREBASE_AUTH } from "../../firebaseConfig";
+import Spinner from 'react-native-loading-spinner-overlay';
+import { useNavigation } from "@react-navigation/native";
 
 export default function Login() {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const navigation = useNavigation();
+    useEffect(() => {
+        const unsubscribe = FIREBASE_AUTH.onAuthStateChanged(user => {
+            if (user) {
+                navigation.navigate('Bottom' as never);
+            }
+        })
+        return unsubscribe
+    }, [])
+
+    const auth = FIREBASE_AUTH;
+    const signIn = async () => {
+        setLoading(true);
+        try {
+            const response = await signInWithEmailAndPassword(auth, email, password);
+            if (response.user) {
+                console.log("Success");
+            }
+        } catch (error: any) {
+            console.log(error)
+            alert('Login failed:' + error.message);
+        } finally {
+            setLoading(false);
+        }
+    }
     return (
-        <View style={styles.Container}>
+        <ScrollView style={styles.Container}>
+            <Spinner
+                visible={loading}
+                textContent={'Loading...'}
+                textStyle={styles.spinnerTextStyle}
+            />
             <Image
                 alt="Logo"
                 style={styles.stretch}
                 source={require("../../assets/Images/day2day1.png")} />
-            <View style={styles.section}>
-                <Text style={styles.Header}>LOGIN</Text>
-                <Text style={styles.SubTopic}>User Name </Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="User Name"
-                    keyboardType="numeric"></TextInput>
-                <Text style={styles.SubTopic}>Password </Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Password"
-                    secureTextEntry
-                    keyboardType="numeric"></TextInput>
-                <Text style={styles.LeftTopic}>Forgot Password?</Text>
-                <TouchableOpacity style={styles.button}>
-                    <Text style={styles.buttonText}>LOGIN</Text>
-                </TouchableOpacity>
-                <Text style={styles.LeftTopic}>Create New Account</Text>
-            </View>
-        </View>
+            <KeyboardAvoidingView behavior="padding">
+                <View style={styles.section}>
+                    <Text style={styles.Header}>LOGIN</Text>
+                    <Text style={styles.SubTopic}>Email</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Email"
+                        onChangeText={(text: string) => setEmail(text)}
+                        value={email as string} // Cast 'email' as string
+                    />
+                    <Text style={styles.SubTopic}>Password </Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Password"
+                        secureTextEntry
+                        onChangeText={(text: string) => setPassword(text)}
+                        value={password as string} // Cast 'password' as string
+                    />
+                    <Text style={styles.LeftTopic}>Forgot Password?</Text>
+                    <TouchableOpacity onPress={() => signIn()} style={styles.button}>
+                        <Text style={styles.buttonText}>LOGIN</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate('Register' as never)}>
+                        <Text style={styles.LeftTopic}>Create New Account</Text>
+                    </TouchableOpacity>
+
+                </View>
+            </KeyboardAvoidingView>
+
+        </ScrollView>
     );
 }
 
@@ -64,13 +113,13 @@ const styles = StyleSheet.create({
         height: 260,
         resizeMode: 'stretch',
         alignSelf: "center",
-        marginTop:50
+        marginTop: 50
     },
     section: {
         backgroundColor: Colors.secondary,
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
-        height:"100%"
+        height: "80%"
     },
     input: {
         height: 40,
@@ -91,11 +140,14 @@ const styles = StyleSheet.create({
         textAlign: "center",
         color: Colors.secondary,
         fontWeight: "bold",
-        padding:10
+        padding: 10
     },
-    button:{
+    button: {
         backgroundColor: Colors.main,
-        margin:50,
-        borderRadius:30
+        margin: 50,
+        borderRadius: 30
+    },
+    spinnerTextStyle: {
+        color: '#FFF',
     }
 })
